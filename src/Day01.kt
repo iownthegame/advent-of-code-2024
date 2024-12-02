@@ -2,38 +2,18 @@ import kotlin.math.absoluteValue
 
 fun main() {
     fun part1(input: List<String>): Int {
-        val leftNums = mutableListOf<Int>()
-        val rightNums = mutableListOf<Int>()
+        val (leftNums, rightNums) = parseInput(input)
 
-        input.forEach { line ->
-            val (left, right) = line.split("   ")
-            leftNums.add(left.toInt())
-            rightNums.add(right.toInt())
+        val result = leftNums.sorted().zip(rightNums.sorted()).sumOf {
+            (leftNum, rightNum) -> (leftNum - rightNum).absoluteValue
         }
-        leftNums.sort()
-        rightNums.sort()
-
-        val result = leftNums.mapIndexed { index, leftNum ->
-            (leftNum - rightNums[index]).absoluteValue
-        }.sum()
-
         return result
     }
 
     fun part2(input: List<String>): Int {
-        val leftNums = mutableListOf<Int>()
-        val rightNums = mutableListOf<Int>()
-
-        input.forEach { line ->
-            val (left, right) = line.split("   ")
-            leftNums.add(left.toInt())
-            rightNums.add(right.toInt())
-        }
-        val rightNumsMap = rightNums.groupingBy { it }.eachCount()
-        val result = leftNums.map {
-            leftNum -> leftNum * (rightNumsMap[leftNum] ?: 0)
-        }.sum()
-
+        val (leftNums, rightNums) = parseInput(input)
+        val rightNumsFrequency = rightNums.groupingBy { it }.eachCount()
+        val result = leftNums.sumOf { leftNum -> leftNum * (rightNumsFrequency[leftNum] ?: 0) }
         return result
     }
 
@@ -46,4 +26,16 @@ fun main() {
     val input = readInput("Day01")
     part1(input).println()
     part2(input).println()
+}
+
+private fun parseInput(input: List<String>): Pair<List<Int>, List<Int>> {
+    val leftNums = mutableListOf<Int>()
+    val rightNums = mutableListOf<Int>()
+
+    input.forEach { line ->
+        val (left, right) = line.split("   ")
+        leftNums.add(left.toInt())
+        rightNums.add(right.toInt())
+    }
+    return Pair(leftNums, rightNums)
 }
